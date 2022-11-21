@@ -1,0 +1,14 @@
+{% ckan_extends %}
+
+{% block package_basic_fields_tags %}
+<div class="form-group control-full">
+    <label class="control-label" for="field-tags">{{ _("tags") }}</label>
+    <div class="controls">
+    <select id="field-tags" name="tags" data-module="autocomplete" multiple>
+        {% for tags in h.tags()  %}
+        <option value="{{ tags }}" {% if tags in data.get('tags', []) %}selected="selected"{% endif %}>{{ tags }}</option>
+        {% endfor %}
+    </select>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "admin/base.html" %}
+
+{% import 'macros/form.html' as form %}
+
+{% set data = data or {} %}
+{% set data1 = data or {} %}
+{% set data2 = data or {} %}
+{% set errors = errors or {} %}
+{% set actionAddTag = url_for('api.action', ver=3, logic_function='addTag') %}
+{% set actionRenameTag = url_for('api.action', ver=3, logic_function='renameTag') %}
+{% set actionDeleteTag = url_for('api.action', ver=3, logic_function='removeTag') %}
+
+{% block primary_content_inner %}
+  <h2 class="module-heading">
+    <i class="fa fa-info-circle"></i>
+    {{ _('Add a new tag') }}
+  </h2>
+
+  <p>Add a SINGLE tag to the allowed tag list</p>
+
+  <form id="tags-add" class="dataset-form dataset-resource-form" method="post" action="{{ actionAddTag }}" data-module="basic-form resource-form" enctype="multipart/form-data">
+    
+    {{ form.input('tag', id='tag', label=_('tag'), placeholder=_('eg. January 2011 Gold Prices'), value=data.tag, error=errors.name, classes=['control-full']) }}
+
+    <button class="btn btn-primary" name="save" value="go-dataset-complete" type="submit">{{ _('Add') }}</button>
+  </form>
+
+  <h2 class="module-heading">
+    <i class="fa fa-info-circle"></i>
+    {{ _('Current tag list') }}
+  </h2>
+
+  {% if h.tags() %}
+  <table class="table table-chunky table-bordered table-striped">
+      <thead>
+      <tr>
+          <th>{{ _('Tag Name') }}</th>
+          <th>{{ _('Update') }}</th>
+          <th class="metric">{{ _('Delete') }}</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for tags in h.tags() %}
+          <tr>
+            <td>
+              <h2>{{ tags }}</h2>
+            </td>
+            <td> 
+              <form id="tags-rename" class="dataset-form dataset-resource-form" method="post" action="{{ actionRenameTag }}" data-module="basic-form resource-form" enctype="multipart/form-data">
+                {{ form.hidden('tagOld', value=tags) }}
+                {{ form.input('tagNew', id='tagNew', label=_('New tag name'), placeholder=_('What should the tag be'), value=tagNew, error=errors.name, classes=['control-full']) }}
+                <button style="margin-top: -20px;" class="btn btn-primary" name="save" value="go-dataset-complete" type="submit">{{ _('Rename') }}</button> 
+              </form>
+            </td>
+            <td class="metric"> 
+              <form id="tags-delete" class="dataset-form dataset-resource-form" method="post" action="{{ actionDeleteTag }}" data-module="basic-form resource-form" enctype="multipart/form-data">
+                <P>Pressing this button will instantly delete the tag</P>
+                {{ form.hidden('tag', value=tags ) }}
+                <button class="btn btn-primary" name="save" value="go-dataset-complete" type="submit" onclick="return confirm('Are you sure you want to permanently delete the ‘{{ tags }}’ tag?')">{{ _('Delete') }}</button> 
+              </form>
+            </td>
+          </tr>
+      {% endfor %}
+      </tbody>
+  </table>
+  {% else %}
+  <p class="empty">{{ _('No tags') }}</p>
+  {% endif %}
+{% endblock %}
+
+{% block secondary_content %}
+  <div class="module module-narrow module-shallow">
+    <h2 class="module-heading">
+      <i class="fa fa-info-circle"></i>
+      {{ _('Administer CKAN') }}
+    </h2>
+    <div class="module-content">
+
+      {% set docs_url = "http://docs.ckan.org/en/{0}/sysadmin-guide.html".format(g.ckan_doc_version) %}
+      {% trans %}
+        <p>As a sysadmin user you have full control over this CKAN instance. Proceed with care!</p>
+        <p>For guidance on using sysadmin features, see the CKAN  <a href="{{ docs_url }}" target="_blank" rel="noreferrer">sysadmin guide</a></p>
+      {% endtrans %}
+    </div>
+  </div>
+{% endblock %}

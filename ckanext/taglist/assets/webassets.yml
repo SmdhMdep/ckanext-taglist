@@ -1,0 +1,14 @@
+# taglist-js:
+#   filter: rjsmin
+#   output: ckanext-taglist/%(version)s-taglist.js
+#   contents:
+#     - js/taglist.js
+#   extra:
+#     preload:
+#       - base/main
+
+# taglist-css:
+#   filter: cssrewrite
+#   output: ckanext-taglist/%(version)s-taglist.css
+#   contents:
+#     - css/taglist.css
