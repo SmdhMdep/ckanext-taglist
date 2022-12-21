@@ -66,7 +66,7 @@ def tags_helper():
     except toolkit.ObjectNotFound:
         return None
 
-class TaglistPlugin(plugins.SingletonPlugin,toolkit.DefaultDatasetForm):
+class TaglistPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IConfigurable)
     plugins.implements(plugins.IDatasetForm, inherit=False)
