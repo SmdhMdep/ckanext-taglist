@@ -1,6 +1,5 @@
 {% ckan_extends %}
 
-
 {% block package_tags %}
-    
+  {% snippet 'snippets/tag_list.html', tags=pkg.tags %}
 {% endblock %}

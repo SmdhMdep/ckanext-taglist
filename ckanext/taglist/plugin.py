@@ -12,7 +12,7 @@ import logging
 log = logging.getLogger(__name__)
 c = toolkit.c
 
-#Used to add page in later get_blueprint()
+# Used to add page in later get_blueprint()
 def tag_show():
 
     context = {'model': model, 'user': c.user, 'auth_user_obj': c.userobj}
@@ -22,9 +22,30 @@ def tag_show():
     except toolkit.NotAuthorized:
         return toolkit.abort(403, 'Need to be system administrator to administer')
 
+# Updates the package tags based on the resources tags
+def update_package_tags(context, resource_dict):
+    # Get package information
+    data = {'id': resource_dict["package_id"]}
+    package = toolkit.get_action('package_show')(context, data)
 
-#Only used on first time startup
-#Adds the required vocabulary
+    # Set to no tags
+    package["tags"] = []
+
+    # Add back all tags
+    # resource["tags"] can be a list or string so both are checked
+    for resource in package["resources"]:
+        if type(resource["tags"]) == list:
+            for tag in resource["tags"]:
+                package["tags"].append({"name": tag, "display_name": tag})
+        else:
+            package["tags"].append({"name": resource["tags"], "display_name": resource["tags"]})
+
+    # Update package with new tags
+    data = {'id': package["id"]}
+    package = toolkit.get_action('package_update')(context, package)
+
+# Only used on first time startup
+# Adds the required vocabulary
 def create_voc(context):
     try:
         data = {'id': 'tags'}
@@ -33,7 +54,7 @@ def create_voc(context):
         data = {'name': 'tags'}
         toolkit.get_action('vocabulary_create')(context, data)
 
-#Adds tags to the vocabulary from the table centraltags
+# Adds tags to the vocabulary from the table centraltags
 def create_tags():
     user = toolkit.get_action('get_site_user')({'ignore_auth': True}, {})
     context = {'user': user['name']}
@@ -67,12 +88,13 @@ def tags_helper():
         return None
 
 class TaglistPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
-    plugins.implements(plugins.IConfigurer)
-    plugins.implements(plugins.IConfigurable)
-    plugins.implements(plugins.IDatasetForm, inherit=False)
+    plugins.implements(plugins.IResourceController, inherit=True)
     plugins.implements(plugins.ITemplateHelpers, inherit=True)
-    plugins.implements(plugins.IActions, inherit=True)
     plugins.implements(plugins.IAuthFunctions, inherit=True)
+    plugins.implements(plugins.IDatasetForm, inherit=False)
+    plugins.implements(plugins.IActions, inherit=True)
+    plugins.implements(plugins.IConfigurable)
+    plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IBlueprint)
 
     # IConfigurable
@@ -128,6 +150,17 @@ class TaglistPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         # This plugin doesn't handle any special package types, it just
         # registers itself as the default (above).
         return []
+
+    # IResourceController
+
+    def after_create(self, context, resource_dict):
+        update_package_tags(context, resource_dict)
+
+    def after_update(self, context, resource_dict):
+        update_package_tags(context, resource_dict)
+
+    def after_delete(self, context, resource_dict):
+        update_package_tags(context, resource_dict)
 
     # IAuthFunctions
     def get_auth_functions(self):

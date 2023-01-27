@@ -100,7 +100,6 @@ def renameTag(context, data_dict):
     return True
 
 #Action API command
-#Dev command to list tags.
 def listTag(context, data_dict):
     tag = db.centraltags.find().all()
     if tag is None:
