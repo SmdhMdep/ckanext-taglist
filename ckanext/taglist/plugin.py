@@ -34,11 +34,15 @@ def update_package_tags(context, resource_dict):
     # Add back all tags
     # resource["tags"] can be a list or string so both are checked
     for resource in package["resources"]:
-        if type(resource["tags"]) == list:
-            for tag in resource["tags"]:
-                package["tags"].append({"name": tag, "display_name": tag})
-        else:
-            package["tags"].append({"name": resource["tags"], "display_name": resource["tags"]})
+        try:
+
+            if type(resource["tags"]) == list:
+                for tag in resource["tags"]:
+                    package["tags"].append({"name": tag, "display_name": tag})
+            else:
+                package["tags"].append({"name": resource["tags"], "display_name": resource["tags"]})
+        except
+            log.warn("no tags")
 
     # Update package with new tags
     data = {'id': package["id"]}
