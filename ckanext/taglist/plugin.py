@@ -41,7 +41,7 @@ def update_package_tags(context, resource_dict):
                     package["tags"].append({"name": tag, "display_name": tag})
             else:
                 package["tags"].append({"name": resource["tags"], "display_name": resource["tags"]})
-        except
+        except:
             log.warn("no tags")
 
     # Update package with new tags
