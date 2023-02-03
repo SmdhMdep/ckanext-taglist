@@ -1,4 +1,4 @@
-[![Tests](https://github.com/STFC/ckanext-taglist/workflows/Tests/badge.svg?branch=main)](https://github.com/STFC/ckanext-taglist/actions)
+[![Tests](https://github.com/SmdhMdep/ckanext-taglist/actions/workflows/test.yml/badge.svg)](https://github.com/SmdhMdep/ckanext-taglist/actions/workflows/test.yml)
 
 # ckanext-taglist
 
