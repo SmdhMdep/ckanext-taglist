@@ -49,14 +49,21 @@ def removeTag(context, data_dict):
     if tag is None:
         return "no tag with name stated"
 
-    log.debug(tag)
+    vocab = model.Vocabulary.get(id_or_name="tags")
+    if vocab is None:
+        return "no vocab with name stated"
+
+    tag2 = model.Tag.by_name(data['tag'],vocab=vocab)
+    if tag2 is None:
+        return "no tag with name stated"
+
 
     session = context['session']
     session.delete(tag)
+    session.delete(tag2)
 
     try:
-        toolkit.get_action('tag_delete')(
-                {}, {'vocabulary_id': 'tags', 'id': data['tag'] })
+        toolkit.get_action('tag_delete')({'ignore_auth': True}, {'vocabulary_id': 'tags', 'id': data['tag'] })
     except:
         return "mis-match error"
 
@@ -100,11 +107,9 @@ def renameTag(context, data_dict):
     return True
 
 #Action API command
-def listTag(context, data_dict):
+def listTag(context,data):
     tag = db.centraltags.find().all()
-    if tag is None:
-        return "no tag with name stated"
+    if tag == [] or tag is None:
+        return "no tags"
 
-    log.debug(tag)
-
-    return True
+    return tag

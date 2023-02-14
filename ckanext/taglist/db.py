@@ -21,6 +21,10 @@ centraltags_table = Table('centraltags', metadata,
 
 #Commands that can be preformed on table
 class centraltags(model.DomainObject):
+    # Allows for data to be queried 
+    def __getitem__(self, field):
+        return self.__dict__[field]
+        
     @classmethod
     def get(cls, **kw):
         query = model.Session.query(cls).autoflush(False)
