@@ -163,8 +163,10 @@ class TaglistPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     def after_update(self, context, resource_dict):
         update_package_tags(context, resource_dict)
 
-    def after_delete(self, context, resource_dict):
-        update_package_tags(context, resource_dict)
+    def before_delete(self, context, resource_id, resource_list):
+        data = {'id': resource_id['id']}
+        resourceInfo = toolkit.get_action('resource_show')({'ignore_auth': True}, data)
+        update_package_tags(context, resourceInfo)
 
     # IAuthFunctions
     def get_auth_functions(self):
